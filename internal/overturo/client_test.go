@@ -188,7 +188,7 @@ func TestEvidenceDigest(t *testing.T) {
 
 // B1 regression — the Go canonicalizer MUST preserve UTF-8 (not
 // escape to \uXXXX) so all three SDKs (TS / Python / Go) produce
-// identical digests for the same input. OV-10's cross-SDK harness
+// identical digests for the same input. the cross-SDK conformance harness
 // will assert this against fixtures.
 func TestEvidenceDigestPreservesUTF8(t *testing.T) {
 	// `café` exercises the UTF-8 path:

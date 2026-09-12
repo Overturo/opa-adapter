@@ -1,10 +1,12 @@
 > **Release mirror.** This repository is a read-only snapshot of
-> `github.com/overturo/opa-adapter` 1.0.0, published from Overturo's main
+> `github.com/overturo/opa-adapter` 1.0.1, published from Overturo's main
 > development repository. Issues and pull requests are welcome here; accepted
 > changes are ported upstream and appear in the next release snapshot.
 > Security reports: see [SECURITY.md](./SECURITY.md).
 
 # overturo-opa-adapter
+
+**Documentation:** <https://overturo.com/developers/agent-authorization> · **API reference:** <https://overturo.com/developers/openapi>
 
 Go sidecar that consumes Open Policy Agent decision logs and translates
 each decision into an Overturo Oversight attestation.

@@ -77,7 +77,7 @@ func NewClient(cfg ClientConfig) *Client {
 	}
 }
 
-// AttestPayload mirrors the OV-1 ingest body shape.
+// AttestPayload mirrors the attestation ingest body shape.
 type AttestPayload struct {
 	AttestationID  string         `json:"attestation_id"`
 	TouchpointID   string         `json:"touchpoint_id"`
@@ -91,7 +91,7 @@ type AttestPayload struct {
 	Context        map[string]any `json:"context"`
 }
 
-// AttestResponse is the parsed OV-1 ingest envelope.
+// AttestResponse is the parsed attestation ingest envelope.
 type AttestResponse struct {
 	Attestation struct {
 		ID               string `json:"id"`
@@ -145,7 +145,7 @@ func (c *Client) Heartbeat(ctx context.Context) error {
 }
 
 // EvidenceDigest returns the SHA-256 hex digest of
-// `canonical(input) | canonical(output)`. Matches OV-1's `/\A[a-f0-9]{64}\z/`
+// `canonical(input) | canonical(output)`. Matches the server's `/\A[a-f0-9]{64}\z/`
 // validator AND matches the TS / Python SDK implementations
 // byte-for-byte — partners can compute the digest in any of the three
 // SDKs and get the same value.
