@@ -1,0 +1,36 @@
+# example OPA + adapter sidecar deployment.
+#
+# 1. Customise overturo-opa-adapter.yaml + opa-config.yaml below.
+# 2. `docker-compose up`.
+# 3. OPA decision logs land in `oap_attestations` on Overturo.
+
+services:
+  opa:
+    image: openpolicyagent/opa:0.65.0
+    command:
+      - "run"
+      - "--server"
+      - "--config-file=/etc/opa-config.yaml"
+      - "/policies"
+    volumes:
+      - ./opa-config.yaml:/etc/opa-config.yaml:ro
+      - ./policies:/policies:ro
+    ports:
+      - "8181:8181"   # OPA's own admin API
+    depends_on:
+      - opa-adapter
+
+  opa-adapter:
+    image: overturo/opa-adapter:v1
+    environment:
+      OVERTURO_ATTESTER_TOKEN: ${OVERTURO_ATTESTER_TOKEN}
+      OVERTURO_TOUCHPOINT_ID: ${OVERTURO_TOUCHPOINT_ID}
+    volumes:
+      - ./overturo-opa-adapter.yaml:/etc/opa-adapter.yaml:ro
+      - opa-adapter-state:/var/lib/opa-adapter
+    ports:
+      - "8281:8181"   # adapter's decision-log receiver
+      - "9090:9090"   # Prometheus metrics
+
+volumes:
+  opa-adapter-state: {}

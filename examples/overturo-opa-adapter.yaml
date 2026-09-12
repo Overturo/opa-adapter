@@ -1,0 +1,33 @@
+# example adapter config.
+#
+# Env-var interpolation: ${VAR_NAME} substitutes at load time.
+
+overturo:
+  base_url: https://api.overturo.us
+  token_env: OVERTURO_ATTESTER_TOKEN
+  touchpoint_id: ${OVERTURO_TOUCHPOINT_ID}
+  heartbeat_cadence_seconds: 60
+  max_retries: 3
+  timeout_seconds: 30
+  state_file: /var/lib/opa-adapter/sequence.json
+  required_oap_version: "1.0"
+
+opa:
+  # One of: "http" or "file".
+  mode: http
+  # http-mode: address to listen on for POSTed decisions.
+  http_listen: ":8181"
+  # file-mode: tail this path for newline-delimited JSON records.
+  # file_path: /var/log/opa/decisions.jsonl
+
+mapping:
+  # All fields are Go text/template expressions with the decision-log
+  # record as context (.path, .input, .result, .bundles, etc.).
+  agent_class: "{{ if .input.agent_class }}{{ .input.agent_class }}{{ else }}opa_default{{ end }}"
+  action_class: "{{ index .path (sub (len .path) 1) }}"
+  legal_basis: legitimate_interests
+
+observability:
+  log_level: info
+  # `:9090` for Prometheus scraping; empty string disables.
+  metrics_listen: ":9090"
