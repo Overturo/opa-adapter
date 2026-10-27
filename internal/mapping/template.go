@@ -18,8 +18,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/overturo/opa-adapter/internal/opa"
-	"github.com/overturo/opa-adapter/internal/overturo"
+	"github.com/overturo/opa-adapter/v2/internal/opa"
+	"github.com/overturo/opa-adapter/v2/internal/overturo"
 )
 
 // Mapping captures the templated field expressions from config.
@@ -63,7 +63,7 @@ func Compile(agentClass, actionClass, legalBasis, policyRef, policyVersion strin
 
 // Apply translates a decision-log record into an OAP attestation payload.
 // Returns a partial payload — the caller is responsible for setting
-// `SequenceNumber`, `TouchpointID`, and `AttestationID`.
+// `SequenceNumber`, `ApplicationID`, and `AttestationID`.
 func (m *Mapping) Apply(decision opa.DecisionLog) (overturo.AttestPayload, error) {
 	agentClass, err := renderTemplate(m.AgentClass, decision)
 	if err != nil {

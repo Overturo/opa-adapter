@@ -21,10 +21,10 @@ services:
       - opa-adapter
 
   opa-adapter:
-    image: overturo/opa-adapter:v1
+    image: ghcr.io/overturo/opa-adapter:v2
     environment:
       OVERTURO_ATTESTER_TOKEN: ${OVERTURO_ATTESTER_TOKEN}
-      OVERTURO_TOUCHPOINT_ID: ${OVERTURO_TOUCHPOINT_ID}
+      OVERTURO_APPLICATION_ID: ${OVERTURO_APPLICATION_ID}
     volumes:
       - ./overturo-opa-adapter.yaml:/etc/opa-adapter.yaml:ro
       - opa-adapter-state:/var/lib/opa-adapter

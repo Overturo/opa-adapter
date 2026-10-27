@@ -1,0 +1,55 @@
+# Release workflow for github.com/overturo/opa-adapter/v2. Runs on this repository's version
+# tag, builds the package from this tree and publishes it with the registry's
+# short-lived trusted-publisher credential. No token is stored anywhere.
+#
+# First version: until the repository variable OVERTURO_PUBLISH is set, the
+# workflow builds and keeps the artefact without publishing (a trusted publisher
+# on npm can only be named for a package that already exists; a maintainer
+# publishes the first version from a session, names the publisher, then sets
+# the variable). A version the registry already serves is left alone, so a
+# re-run is never red. This workflow never commits, tags or pushes.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Version from the tag
+        id: v
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go vet ./... && go build ./...
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push the image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: VERSION=v${{ steps.v.outputs.version }}
+          tags: |
+            ghcr.io/overturo/opa-adapter:v${{ steps.v.outputs.version }}
+            ghcr.io/overturo/opa-adapter:v2
+          labels: |
+            org.opencontainers.image.source=https://github.com/overturo/opa-adapter
+            org.opencontainers.image.version=v${{ steps.v.outputs.version }}
+            org.opencontainers.image.revision=v${{ steps.v.outputs.version }}
+            org.opencontainers.image.licenses=Apache-2.0

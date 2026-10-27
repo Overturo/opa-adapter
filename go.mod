@@ -1,4 +1,4 @@
-module github.com/overturo/opa-adapter
+module github.com/overturo/opa-adapter/v2
 
 go 1.22
 

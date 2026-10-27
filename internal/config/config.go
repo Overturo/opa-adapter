@@ -4,7 +4,7 @@
 // Env-var interpolation: any `${VAR_NAME}` in a string field is
 // substituted with the corresponding environment variable at load
 // time. Missing env vars produce an empty string (NOT an error) so
-// optional fields (e.g., touchpoint_id when seeded via env) behave
+// optional fields (e.g., application_id when seeded via env) behave
 // intuitively; required-field validation runs after substitution.
 package config
 
@@ -28,7 +28,7 @@ type OverturoConfig struct {
 	BaseURL                 string `yaml:"base_url"`
 	Token                   string `yaml:"token"`
 	TokenEnv                string `yaml:"token_env"`
-	TouchpointID            string `yaml:"touchpoint_id"`
+	ApplicationID            string `yaml:"application_id"`
 	HeartbeatCadenceSeconds int    `yaml:"heartbeat_cadence_seconds"`
 	MaxRetries              int    `yaml:"max_retries"`
 	TimeoutSeconds          int    `yaml:"timeout_seconds"`
@@ -129,8 +129,8 @@ func validate(cfg *Config) error {
 	if cfg.Overturo.Token == "" {
 		errs = append(errs, "overturo.token (or token_env-resolved value) is required")
 	}
-	if cfg.Overturo.TouchpointID == "" {
-		errs = append(errs, "overturo.touchpoint_id is required")
+	if cfg.Overturo.ApplicationID == "" {
+		errs = append(errs, "overturo.application_id is required")
 	}
 	if cfg.Overturo.HeartbeatCadenceSeconds < 10 {
 		errs = append(errs, "overturo.heartbeat_cadence_seconds must be >= 10")

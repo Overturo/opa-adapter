@@ -5,7 +5,7 @@
 overturo:
   base_url: https://api.overturo.us
   token_env: OVERTURO_ATTESTER_TOKEN
-  touchpoint_id: ${OVERTURO_TOUCHPOINT_ID}
+  application_id: ${OVERTURO_APPLICATION_ID}
   heartbeat_cadence_seconds: 60
   max_retries: 3
   timeout_seconds: 30

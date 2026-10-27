@@ -3,7 +3,7 @@ package mapping
 import (
 	"testing"
 
-	"github.com/overturo/opa-adapter/internal/opa"
+	"github.com/overturo/opa-adapter/v2/internal/opa"
 )
 
 func TestCompileHappyPath(t *testing.T) {

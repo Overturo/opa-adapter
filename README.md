@@ -1,5 +1,5 @@
 > **Release mirror.** This repository is a read-only snapshot of
-> `github.com/overturo/opa-adapter` 1.0.1, published from Overturo's main
+> `github.com/overturo/opa-adapter/v2` 2.0.0, published from Overturo's main
 > development repository. Issues and pull requests are welcome here; accepted
 > changes are ported upstream and appear in the next release snapshot.
 > Security reports: see [SECURITY.md](./SECURITY.md).
@@ -11,7 +11,7 @@
 Go sidecar that consumes Open Policy Agent decision logs and translates
 each decision into an Overturo Oversight attestation.
 
-Single static binary; ~15 MB Docker image (`overturo/opa-adapter:v1`).
+Single static binary; ~15 MB Docker image (`ghcr.io/overturo/opa-adapter:v2`).
 Apache-2.0.
 
 ## Why a sidecar (not a library)
@@ -36,7 +36,14 @@ docker run --rm \
   -v $(pwd)/overturo-opa-adapter.yaml:/etc/opa-adapter.yaml \
   -e OVERTURO_ATTESTER_TOKEN=tat_us_... \
   -p 8181:8181 \
-  overturo/opa-adapter:v1
+  ghcr.io/overturo/opa-adapter:v2
+```
+
+## Run from source
+
+```bash
+go install github.com/overturo/opa-adapter/v2/cmd/opa-adapter@v2.0.0
+opa-adapter -config ./overturo-opa-adapter.yaml
 ```
 
 ## Configure OPA to ship decisions

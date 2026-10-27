@@ -25,7 +25,7 @@ func newTestClient(t *testing.T, srv *httptest.Server, tokens *TokenManager) *Cl
 		Tokens:       tokens,
 		Endpoints:    disc,
 		MaxRetries:   2,
-		TouchpointID: "tp_dev_yyy",
+		ApplicationID: "tp_dev_yyy",
 		Timeout:      5 * time.Second,
 	})
 }

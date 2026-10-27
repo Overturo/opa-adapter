@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"sync"
 	"syscall"
 	"time"
@@ -24,16 +25,27 @@ import (
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 
-	"github.com/overturo/opa-adapter/internal/config"
-	"github.com/overturo/opa-adapter/internal/mapping"
-	"github.com/overturo/opa-adapter/internal/observability"
-	"github.com/overturo/opa-adapter/internal/opa"
-	"github.com/overturo/opa-adapter/internal/overturo"
+	"github.com/overturo/opa-adapter/v2/internal/config"
+	"github.com/overturo/opa-adapter/v2/internal/mapping"
+	"github.com/overturo/opa-adapter/v2/internal/observability"
+	"github.com/overturo/opa-adapter/v2/internal/opa"
+	"github.com/overturo/opa-adapter/v2/internal/overturo"
 )
 
-// version is set from the release tag at build time
-// (-ldflags "-X main.version=<tag>"); "dev" for a plain `go build`.
+// version comes from the release tag: the image build passes it as a build
+// argument (-ldflags "-X main.version=<tag>"); a `go install` of the tag
+// carries it in the module's build information; a plain `go build` says "dev".
 var version = "dev"
+
+func resolvedVersion() string {
+	if version != "dev" {
+		return version
+	}
+	if bi, ok := debug.ReadBuildInfo(); ok && bi.Main.Version != "" && bi.Main.Version != "(devel)" {
+		return bi.Main.Version
+	}
+	return version
+}
 
 func main() {
 	configPath := flag.String("config", "/etc/opa-adapter.yaml", "path to YAML config")
@@ -41,7 +53,7 @@ func main() {
 	flag.Parse()
 
 	if *versionFlag {
-		fmt.Println("overturo-opa-adapter " + version)
+		fmt.Println("overturo-opa-adapter " + resolvedVersion())
 		return
 	}
 
@@ -54,7 +66,7 @@ func main() {
 	logger := observability.NewLogger(cfg.Observability.LogLevel)
 	logger.Info().
 		Str("base_url", observability.SafeURL(cfg.Overturo.BaseURL)).
-		Str("touchpoint_id", cfg.Overturo.TouchpointID).
+		Str("application_id", cfg.Overturo.ApplicationID).
 		Str("opa_mode", cfg.OPA.Mode).
 		Msg("opa-adapter starting")
 
@@ -106,7 +118,7 @@ func run(ctx context.Context, cfg *config.Config, logger zerolog.Logger, metrics
 		Tokens:       tokens,
 		Endpoints:    disc.Endpoints,
 		MaxRetries:   cfg.Overturo.MaxRetries,
-		TouchpointID: cfg.Overturo.TouchpointID,
+		ApplicationID: cfg.Overturo.ApplicationID,
 		Logger:       clientLogger,
 		Timeout:      time.Duration(cfg.Overturo.TimeoutSeconds) * time.Second,
 	})
@@ -164,7 +176,7 @@ func run(ctx context.Context, cfg *config.Config, logger zerolog.Logger, metrics
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		runSubmissions(sigCtx, decisions, mapper, client, seq, cfg.Overturo.TouchpointID, logger, metrics)
+		runSubmissions(sigCtx, decisions, mapper, client, seq, cfg.Overturo.ApplicationID, logger, metrics)
 	}()
 
 	wg.Wait()
@@ -235,7 +247,7 @@ func handleDecision(
 		return
 	}
 
-	payload.TouchpointID = touchpointID
+	payload.ApplicationID = touchpointID
 	payload.AttestationID = "att-opa-adapter-" + uuid.NewString()
 	payload.SequenceNumber = seq.Next()
 

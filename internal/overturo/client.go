@@ -47,7 +47,7 @@ type ClientConfig struct {
 	Tokens       *TokenManager
 	Endpoints    Endpoints
 	MaxRetries   int
-	TouchpointID string
+	ApplicationID string
 	Logger       ClientLogger
 	Timeout      time.Duration
 }
@@ -72,7 +72,7 @@ func NewClient(cfg ClientConfig) *Client {
 		tokens:     cfg.Tokens,
 		endpoints:  cfg.Endpoints,
 		maxRetries: cfg.MaxRetries,
-		touchpoint: cfg.TouchpointID,
+		touchpoint: cfg.ApplicationID,
 		logger:     cfg.Logger,
 	}
 }
@@ -80,7 +80,7 @@ func NewClient(cfg ClientConfig) *Client {
 // AttestPayload mirrors the attestation ingest body shape.
 type AttestPayload struct {
 	AttestationID  string         `json:"attestation_id"`
-	TouchpointID   string         `json:"touchpoint_id"`
+	ApplicationID   string         `json:"application_id"`
 	AgentClass     string         `json:"agent_class"`
 	ActionClass    string         `json:"action_class"`
 	Decision       string         `json:"decision"`
@@ -126,8 +126,8 @@ func (c *Client) Attest(ctx context.Context, body AttestPayload) (*AttestRespons
 	if body.DecidedAt == "" {
 		body.DecidedAt = time.Now().UTC().Format(time.RFC3339Nano)
 	}
-	if body.TouchpointID == "" {
-		body.TouchpointID = c.touchpoint
+	if body.ApplicationID == "" {
+		body.ApplicationID = c.touchpoint
 	}
 
 	var resp AttestResponse
@@ -140,7 +140,7 @@ func (c *Client) Attest(ctx context.Context, body AttestPayload) (*AttestRespons
 // Heartbeat fires a single heartbeat ping.
 func (c *Client) Heartbeat(ctx context.Context) error {
 	return c.postJSON(ctx, c.endpoints.Heartbeat, map[string]string{
-		"touchpoint_id": c.touchpoint,
+		"application_id": c.touchpoint,
 	}, nil)
 }
 

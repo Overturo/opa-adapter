@@ -22,7 +22,7 @@ func TestLoadHappyPath(t *testing.T) {
 overturo:
   base_url: https://api.overturo.us
   token: tat_dev_xxx
-  touchpoint_id: tp_dev_yyy
+  application_id: tp_dev_yyy
 opa:
   mode: http
   http_listen: :8181
@@ -45,12 +45,12 @@ mapping:
 }
 
 func TestLoadInterpolatesEnvVars(t *testing.T) {
-	t.Setenv("MY_TOUCHPOINT", "tp_dev_from_env")
+	t.Setenv("MY_APPLICATION", "tp_dev_from_env")
 	cfg, err := Load(writeFile(t, `
 overturo:
   base_url: https://api.overturo.us
   token: tat_dev_xxx
-  touchpoint_id: ${MY_TOUCHPOINT}
+  application_id: ${MY_APPLICATION}
 opa:
   mode: http
 mapping:
@@ -60,8 +60,8 @@ mapping:
 	if err != nil {
 		t.Fatalf("load: %v", err)
 	}
-	if cfg.Overturo.TouchpointID != "tp_dev_from_env" {
-		t.Errorf("env interp: %s", cfg.Overturo.TouchpointID)
+	if cfg.Overturo.ApplicationID != "tp_dev_from_env" {
+		t.Errorf("env interp: %s", cfg.Overturo.ApplicationID)
 	}
 }
 
@@ -71,7 +71,7 @@ func TestTokenEnvFallback(t *testing.T) {
 overturo:
   base_url: https://api.overturo.us
   token_env: MY_TOKEN_VAR
-  touchpoint_id: tp_dev_yyy
+  application_id: tp_dev_yyy
 opa:
   mode: http
 mapping:
@@ -94,49 +94,49 @@ func TestRejectsMissingRequiredFields(t *testing.T) {
 	}{
 		{
 			"missing base_url",
-			`overturo: { token: t, touchpoint_id: tp }
+			`overturo: { token: t, application_id: tp }
 opa: { mode: http }
 mapping: { agent_class: x, action_class: y }`,
 			"base_url",
 		},
 		{
-			"missing touchpoint_id",
+			"missing application_id",
 			`overturo: { base_url: https://x.test, token: t }
 opa: { mode: http }
 mapping: { agent_class: x, action_class: y }`,
-			"touchpoint_id",
+			"application_id",
 		},
 		{
 			"missing token",
-			`overturo: { base_url: https://x.test, touchpoint_id: tp }
+			`overturo: { base_url: https://x.test, application_id: tp }
 opa: { mode: http }
 mapping: { agent_class: x, action_class: y }`,
 			"token",
 		},
 		{
 			"opa mode invalid",
-			`overturo: { base_url: https://x.test, token: t, touchpoint_id: tp }
+			`overturo: { base_url: https://x.test, token: t, application_id: tp }
 opa: { mode: rogue }
 mapping: { agent_class: x, action_class: y }`,
 			"opa.mode",
 		},
 		{
 			"file mode missing path",
-			`overturo: { base_url: https://x.test, token: t, touchpoint_id: tp }
+			`overturo: { base_url: https://x.test, token: t, application_id: tp }
 opa: { mode: file }
 mapping: { agent_class: x, action_class: y }`,
 			"file_path",
 		},
 		{
 			"missing mapping",
-			`overturo: { base_url: https://x.test, token: t, touchpoint_id: tp }
+			`overturo: { base_url: https://x.test, token: t, application_id: tp }
 opa: { mode: http }
 mapping: { agent_class: x }`,
 			"action_class",
 		},
 		{
 			"invalid log_level",
-			`overturo: { base_url: https://x.test, token: t, touchpoint_id: tp }
+			`overturo: { base_url: https://x.test, token: t, application_id: tp }
 opa: { mode: http }
 mapping: { agent_class: x, action_class: y }
 observability: { log_level: noisy }`,
@@ -162,7 +162,7 @@ func TestDefaultsApplyWhenAbsent(t *testing.T) {
 overturo:
   base_url: https://api.overturo.us
   token: tat_dev_xxx
-  touchpoint_id: tp_dev_yyy
+  application_id: tp_dev_yyy
 opa:
   mode: http
 mapping:
